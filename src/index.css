@@ -1,13 +1,21 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import '~antd/dist/antd.css';
+
+.login-header {
+  background: aliceblue;
+  border-bottom: grey 1px solid;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.login-header .tel {
+  float: right;
 }
+
+.login-content {
+  background-image: url("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpicnew13.photophoto.cn%2F20181125%2Fjianyuelansejianbianjihedaqibeijingbanner-32379027_1.jpg&refer=http%3A%2F%2Fpicnew13.photophoto.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1617182588&t=6574937541a014ff5ae2e79819fddc4d");
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
+.login-footer {
+  background: cornsilk;
+}
+
