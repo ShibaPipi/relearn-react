@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Card, Checkbox, Col, Form, Input, Modal, Row, Progress, message } from 'antd'
-import { getMobileCaptcha } from '../../../utils/api'
+import { Button, Card, Checkbox, Col, Form, Input, Modal, Row, message } from 'antd'
+import { getMobileCaptcha, login } from '../../../utils/api'
 
 const rules = {
   mobile: [
@@ -9,7 +9,7 @@ const rules = {
       required: true,
       message: '请输入手机号码！',
     }, {
-      pattern: /^[1][3,4,5,7,8,9][0-9]{9}$/,
+      pattern: /^[1][345789][0-9]{9}$/,
       message: '手机号格式不正确！'
     }
   ],
@@ -26,7 +26,10 @@ const rules = {
     {
       required: true,
       message: '请输入密码！'
-    }, {}
+    }, {
+      pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,32}$/,
+      message: '密码格式错误'
+    }
   ],
   agreement: [
     {
@@ -40,15 +43,13 @@ const rules = {
 }
 
 class RegForm extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
 
     this.state = {
       modalVisible: false,
       captchaButtonDisabled: false,
-      captchaButtonText: '获取验证码',
       captchaSecond: 60,
-      passwordStatus: 'success'
     }
   }
 
@@ -56,17 +57,21 @@ class RegForm extends Component {
     this.setState({ modalVisible })
   }
 
-  handleChangeButtonText() {
-    const timer = setInterval(() => {
-      if (this.state.captchaSecond > 0) {
-        this.setState({
-          captchaSecond: this.state.captchaSecond - 1,
-          captchaButtonText: this.state.captchaSecond + '秒'
-        })
-      } else {
-        clearInterval(timer)
-      }
-    })
+  captchaInterval() {
+    const { captchaSecond } = this.state
+
+    if (1 === captchaSecond) {
+      this.setState({
+        captchaSecond: 60,
+        captchaButtonDisabled: false,
+      })
+    } else {
+      this.setState({
+        captchaSecond: captchaSecond - 1,
+      })
+
+      setTimeout(() => this.captchaInterval(), 1000)
+    }
   }
 
   async getCaptcha() {
@@ -79,12 +84,20 @@ class RegForm extends Component {
         captchaButtonDisabled: true
       })
 
-      this.handleChangeButtonText()
-
+      this.captchaInterval()
     } else {
       message.error('获取验证码失败')
     }
   }
+
+  async loginSubmit() {
+    form.validateFields((err) => {
+      if (!err) {
+        const res = login()
+        console.log(res)
+      }
+    })
+  };
 
   render() {
     return (
@@ -101,6 +114,8 @@ class RegForm extends Component {
           wrapperCol={{ span: 16 }}
           layout="horizontal"
           validateTrigger="onBlur"
+          requiredMark={false}
+          form="form"
         >
           <Form.Item
             label="手机号"
@@ -126,7 +141,7 @@ class RegForm extends Component {
                   disabled={this.state.captchaButtonDisabled}
                   onClick={() => this.getCaptcha()}
                 >
-                  {this.state.captchaButtonText}
+                  {this.state.captchaButtonDisabled ? `${this.state.captchaSecond} 秒` : '获取验证码'}
                 </Button>
               </Col>
             </Row>
@@ -137,19 +152,6 @@ class RegForm extends Component {
             rules={rules.password}
           >
             <Input.Password />
-            <Card title={
-              <div>
-                密码强度
-                <Progress
-                  percent={70}
-                  status={this.state.passwordStatus}
-                />
-              </div>
-            }>
-              <p>- 输入八个以上字符，前后不能有空格，区分大小写</p>
-              <p>- 必须包含大小写英文字母、数字</p>
-              <p>- 多简单（我太难了）</p>
-            </Card>
           </Form.Item>
           <Form.Item
             wrapperCol={22}
