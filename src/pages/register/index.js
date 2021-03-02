@@ -8,11 +8,11 @@ import {
   Divider,
   Space
 } from 'antd'
-import LoginForm from './components/LoginForm'
+import RegForm from './components/RegForm'
 
 const { Header, Content } = Layout
 
-class Login extends Component {
+class Register extends Component {
   render() {
     return (
       <Layout>
@@ -34,7 +34,7 @@ class Login extends Component {
                   <Space direction="vertical" align="center" size={40}>
                     <br />
                     <br />
-                    <LoginForm />
+                    <RegForm />
                     <br />
                     <br />
                     <div>
@@ -61,4 +61,4 @@ class Login extends Component {
   }
 }
 
-export default Login
+export default Register
