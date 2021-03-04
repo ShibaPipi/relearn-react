@@ -4,6 +4,6 @@ export function getMobileCaptcha() {
   return request(111111)
 }
 
-export function login() {
-  return request('pipi')
+export function login(mobile) {
+  return request(mobile)
 }

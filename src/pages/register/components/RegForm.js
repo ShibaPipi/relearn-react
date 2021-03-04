@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Card, Checkbox, Col, Form, Input, Modal, Row, message } from 'antd'
 import { getMobileCaptcha, login } from '../../../utils/api'
+import { getToken, setToken } from '../../../utils/auth'
 
 const rules = {
   mobile: [
@@ -53,6 +54,8 @@ class RegForm extends Component {
     }
   }
 
+  formRef = React.createRef()
+
   setModalVisible(modalVisible) {
     this.setState({ modalVisible })
   }
@@ -91,13 +94,14 @@ class RegForm extends Component {
   }
 
   async loginSubmit() {
-    form.validateFields((err) => {
-      if (!err) {
-        const res = login()
-        console.log(res)
-      }
-    })
-  };
+    const { mobile } = await this.formRef.current.validateFields()
+    const { code } = login(mobile)
+    if (200 === code) {
+      this.props.history.push({
+        pathname: '/'
+      })
+    }
+  }
 
   render() {
     return (
@@ -115,7 +119,7 @@ class RegForm extends Component {
           layout="horizontal"
           validateTrigger="onBlur"
           requiredMark={false}
-          form="form"
+          ref={this.formRef}
         >
           <Form.Item
             label="手机号"
@@ -170,23 +174,27 @@ class RegForm extends Component {
             </Checkbox>
           </Form.Item>
           <Form.Item wrapperCol={22}>
-            <Button type="primary" htmlType="submit" block>
+            <Button
+              type="primary"
+              block
+              onClick={() => this.loginSubmit()}
+            >
               立即注册
             </Button>
           </Form.Item>
+          <Modal
+            title="用户协议"
+            centered
+            visible={this.state.modalVisible}
+            onOk={() => this.setModalVisible(false)}
+            onCancel={() => this.setModalVisible(false)}
+          >
+            <p>some contents...</p>
+            <p>some contents...</p>
+            <p>some contents...</p>
+          </Modal>
         </Form>
         <div>已有账号，<Link to="#">立即登录</Link></div>
-        <Modal
-          title="用户协议"
-          centered
-          visible={this.state.modalVisible}
-          onOk={() => this.setModalVisible(false)}
-          onCancel={() => this.setModalVisible(false)}
-        >
-          <p>some contents...</p>
-          <p>some contents...</p>
-          <p>some contents...</p>
-        </Modal>
       </Card>
     )
   }
